@@ -1,0 +1,60 @@
+{
+  "common": {
+    "appName": "WeFarm",
+    "tagline": "ताज़ा • स्थानीय • विश्वसनीय",
+    "loading": "लोड हो रहा है...",
+    "search": "पौधे, नर्सरी खोजें...",
+    "noResults": "कोई लिस्टिंग नहीं मिली",
+    "refresh": "रिफ्रेश",
+    "back": "वापस",
+    "save": "सेव",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "confirm": "पुष्टि करें",
+    "yes": "हां",
+    "no": "नहीं"
+  },
+  "landing": {
+    "subtitle": "रियल-टाइम डिस्कवरी",
+    "title1": "ताज़ा नर्सरी",
+    "title2": "पौधे खोजें",
+    "title3": "अपने पास",
+    "description": "स्थानीय नर्सरी से सीधे जुड़ें। ताज़ा पौधे ब्राउज़ करें।",
+    "buyButton": "मुझे खरीदना है",
+    "buyDescription": "पास की नर्सरी के पौधे देखें",
+    "sellButton": "मुझे बेचना है",
+    "sellDescription": "अपने पौधों की लिस्टिंग अपलोड करें",
+    "locationBased": "लोकेशन आधारित",
+    "alwaysFresh": "हमेशा ताज़ा",
+    "footer": "पौधों की बर्बादी कम करना, किसानों को जोड़ना"
+  },
+  "buyer": {
+    "nearbyResults": "आपके पास के रिज़ल्ट दिखा रहे हैं",
+    "enableLocation": "पास के रिज़ल्ट के लिए लोकेशन चालू करें",
+    "detecting": "आपका लोकेशन पता लगा रहे हैं...",
+    "listingsFound": "लिस्टिंग मिलीं",
+    "call": "कॉल",
+    "whatsapp": "WhatsApp",
+    "daysOld": "दिन पुराना",
+    "courierAvailable": "कूरियर उपलब्ध",
+    "pickupOnly": "केवल पिकअप",
+    "expiresIn": "समाप्ति",
+    "allCategories": "सभी",
+    "noListingsTitle": "कोई लिस्टिंग नहीं मिली",
+    "noListingsDescription": "आपके क्षेत्र में अभी नर्सरी लिस्टिंग नहीं है। बाद में देखें!"
+  },
+  "categories": {
+    "all": "सभी",
+    "tomato": "टमाटर",
+    "chilli": "मिर्च",
+    "brinjal": "बैंगन",
+    "cauliflower": "फूलगोभी",
+    "cabbage": "पत्तागोभी",
+    "onion": "प्याज",
+    "capsicum": "शिमला मिर्च",
+    "gourd": "लौकी",
+    "leafy": "हरी सब्ज़ियां",
+    "flower": "फूल",
+    "fruit": "फल"
+  }
+}
