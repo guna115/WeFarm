@@ -12,6 +12,7 @@ import { authMiddleware } from './middleware/auth';
 import { generalLimiter, authLimiter, uploadLimiter } from './middleware/rateLimiter';
 import { uploadImage } from './utils/cloudinary';
 import { addWatermark, compressImage } from './utils/watermark';
+import { verifyPlantImage } from './utils/aiModerator';
 import { startCleanupCron } from './cron/cleanup';
 
 dotenv.config();
@@ -84,11 +85,21 @@ app.post(
       const nurseryName = req.body.nursery_name || 'WeFarm';
       const results = [];
 
+      // Moderate and upload each file
       for (const file of files) {
-        // Compress image
+        // Step 1: Compress image
         let processedBuffer = await compressImage(file.buffer);
-        // Add watermark is disabled because frontend already adds it via Canvas
-        // Upload to Cloudinary
+        
+        // Step 2: AI Verification
+        const isPlant = await verifyPlantImage(processedBuffer, 'image/jpeg');
+        if (!isPlant) {
+          res.status(400).json({ 
+            message: 'AI detected a non-plant image. Please upload only photos of plants, crops, or nurseries.' 
+          });
+          return;
+        }
+
+        // Step 3: Upload to Cloudinary
         const uploaded = await uploadImage(processedBuffer);
         results.push(uploaded);
       }

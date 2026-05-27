@@ -27,6 +27,7 @@ export default function ImageSlider({ images, plantName }: ImageSliderProps) {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX; // Reset end X to start X
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -39,6 +40,10 @@ export default function ImageSlider({ images, plantName }: ImageSliderProps) {
       if (diff > 0) goNext();
       else goPrev();
     }
+    
+    // Reset for next gesture
+    touchStartX.current = 0;
+    touchEndX.current = 0;
   };
 
   return (
