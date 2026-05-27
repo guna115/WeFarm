@@ -6,7 +6,11 @@
 const getApiUrl = (): string => {
   // If explicitly set via environment variable, use that
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== '/api') {
-    return process.env.NEXT_PUBLIC_API_URL;
+    let url = process.env.NEXT_PUBLIC_API_URL;
+    if (!url.endsWith('/api')) {
+      url += '/api';
+    }
+    return url;
   }
 
   // In browser: check if we're on localhost or production
