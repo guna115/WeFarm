@@ -18,7 +18,7 @@ import {
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '@/lib/config';
 
 export default function SellerEditProfilePage() {
   const router = useRouter();

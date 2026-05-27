@@ -22,7 +22,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/LanguageContext';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '@/lib/config';
 
 export default function SellerDashboardPage() {
   const router = useRouter();
