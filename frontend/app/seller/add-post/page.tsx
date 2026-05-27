@@ -33,11 +33,16 @@ export default function AddPostPage() {
   const [cameraError, setCameraError] = useState('');
   const [step, setStep] = useState<'camera' | 'details'>('camera');
 
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationCaptured, setLocationCaptured] = useState(false);
+
   const [formData, setFormData] = useState({
     plant_name: '',
     category: 'tomato',
     days_old: '',
     address: '',
+    latitude: 0,
+    longitude: 0,
     courier_available: false,
   });
 
@@ -47,8 +52,13 @@ export default function AddPostPage() {
       setFormData((prev) => ({
         ...prev,
         address: prev.address || seller.address || '',
+        latitude: prev.latitude || seller.latitude || 0,
+        longitude: prev.longitude || seller.longitude || 0,
         courier_available: seller.courier_available || false,
       }));
+      if (seller.latitude && seller.longitude) {
+        setLocationCaptured(true);
+      }
     }
   }, [seller]);
 
@@ -65,6 +75,31 @@ export default function AddPostPage() {
       setCameraError('Camera access denied. Please allow camera permission to upload live photos.');
     }
   }, []);
+
+  const captureLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFormData((prev) => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }));
+        setLocationCaptured(true);
+        setLocationLoading(false);
+      },
+      (err) => {
+        console.error('Location error:', err);
+        alert('Failed to get location. Please allow location access and try again.');
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 30000, maximumAge: 60000 }
+    );
+  };
 
   // Attach stream to video element when it becomes available in the DOM
   useEffect(() => {
@@ -158,8 +193,8 @@ export default function AddPostPage() {
           contact_number: seller.phone_number,
           whatsapp_number: seller.whatsapp_number || seller.phone_number,
           address: formData.address,
-          latitude: seller.latitude,
-          longitude: seller.longitude,
+          latitude: formData.latitude || seller.latitude,
+          longitude: formData.longitude || seller.longitude,
           courier_available: formData.courier_available,
         }),
       });
@@ -338,6 +373,25 @@ export default function AddPostPage() {
                 <MapPin className="w-4 h-4 text-primary-600" /> Pickup Address *
               </label>
               <input name="address" value={formData.address} onChange={handleChange} placeholder="e.g. Kavali, Nellore District" className="input-field" required />
+            </div>
+
+            <div className="p-4 bg-white rounded-2xl border-2 border-surface-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-surface-800">Live Location</p>
+                    <p className="text-xs text-surface-500">
+                      {locationCaptured ? `${Number(formData.latitude).toFixed(4)}, ${Number(formData.longitude).toFixed(4)}` : 'Update your live location'}
+                    </p>
+                  </div>
+                </div>
+                <button type="button" onClick={captureLocation} disabled={locationLoading} className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${locationCaptured ? 'bg-primary-50 text-primary-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+                  {locationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : locationCaptured ? '✓ Update' : 'Capture'}
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-surface-200">

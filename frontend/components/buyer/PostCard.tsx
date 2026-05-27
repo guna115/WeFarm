@@ -64,25 +64,14 @@ export default function PostCard({ post, onReport }: PostCardProps) {
             {post.nursery_name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-surface-800 leading-tight">
+            <h3 className="text-[15px] font-extrabold text-surface-900 leading-tight">
               {post.nursery_name}
             </h3>
-            <div className="flex flex-col gap-0.5 mt-0.5">
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-3 h-3 text-surface-400" />
-                <span className="text-xs text-surface-500 line-clamp-1">
-                  {post.address}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3 h-3 text-surface-400" />
-                <span className="text-[10px] font-medium text-surface-400">
-                  {new Date(post.created_at).toLocaleString('en-IN', {
-                    day: 'numeric', month: 'short', year: 'numeric',
-                    hour: 'numeric', minute: '2-digit', hour12: true
-                  })}
-                </span>
-              </div>
+            <div className="flex items-center gap-1 mt-1">
+              <MapPin className="w-3.5 h-3.5 text-surface-400 flex-shrink-0" />
+              <span className="text-xs font-medium text-surface-500 line-clamp-1 pr-2">
+                {post.address}
+              </span>
             </div>
           </div>
         </div>
@@ -112,6 +101,17 @@ export default function PostCard({ post, onReport }: PostCardProps) {
 
       {/* Plant Details */}
       <div className="px-4 pt-3 pb-2">
+        {/* Timestamp */}
+        <div className="flex items-center gap-1.5 mb-2 text-surface-400">
+          <Clock className="w-3.5 h-3.5" />
+          <span className="text-[11px] font-semibold tracking-wide">
+            {new Date(post.created_at).toLocaleString('en-IN', {
+              day: 'numeric', month: 'short', year: 'numeric',
+              hour: 'numeric', minute: '2-digit', hour12: true
+            })}
+          </span>
+        </div>
+
         {/* Plant name & days */}
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-lg font-bold text-surface-900">
