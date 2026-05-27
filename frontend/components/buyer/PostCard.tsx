@@ -63,16 +63,10 @@ export default function PostCard({ post, onReport }: PostCardProps) {
           <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-white font-bold text-sm shadow-md shadow-primary-500/20">
             {post.nursery_name.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h3 className="text-[15px] font-extrabold text-surface-900 leading-tight">
+          <div className="flex flex-col justify-center">
+            <h3 className="text-base font-extrabold text-surface-900 leading-none">
               {post.nursery_name}
             </h3>
-            <div className="flex items-center gap-1 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-surface-400 flex-shrink-0" />
-              <span className="text-xs font-medium text-surface-500 line-clamp-1 pr-2">
-                {post.address}
-              </span>
-            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -123,6 +117,14 @@ export default function PostCard({ post, onReport }: PostCardProps) {
               {post.days_old} {t('buyer.daysOld')}
             </span>
           </div>
+        </div>
+
+        {/* Location & Address */}
+        <div className="flex items-start gap-1.5 mb-3 bg-surface-50 p-2 rounded-lg border border-surface-100">
+          <MapPin className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+          <span className="text-xs font-medium text-surface-600 leading-snug line-clamp-2">
+            {post.address}
+          </span>
         </div>
 
         {/* Tags row */}
