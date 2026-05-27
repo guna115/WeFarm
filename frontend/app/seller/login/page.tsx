@@ -155,12 +155,6 @@ export default function SellerLoginPage() {
               </span>
             </div>
 
-            {/* Dev mode notice */}
-            <div className="p-3 bg-earth-50 rounded-xl border border-earth-200 mt-4">
-              <p className="text-xs text-earth-700 text-center font-medium">
-                🔧 Dev Mode — OTP skipped for testing. Auth will be added later.
-              </p>
-            </div>
           </form>
         </div>
       </div>
