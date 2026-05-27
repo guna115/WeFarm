@@ -23,7 +23,11 @@ const PORT = process.env.PORT || 5000;
 app.set('trust proxy', 1);
 
 // Global middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: false,
+  contentSecurityPolicy: false,
+}));
 app.use(cors({
   origin: true,
   credentials: true,
@@ -56,21 +60,16 @@ app.get('/api/health', (_req, res) => {
 // Auth routes (rate limited)
 app.use('/api/auth', authLimiter, authRoutes);
 
-// Seller routes — dev mode: no auth; prod: add authMiddleware
-const isDev = process.env.NODE_ENV !== 'production';
-if (isDev) {
-  app.use('/api/seller', sellerRoutes);
-} else {
-  app.use('/api/seller', authMiddleware, sellerRoutes);
-}
+// Seller routes — no auth middleware during testing phase
+// Auth middleware will be added when OTP login is implemented
+app.use('/api/seller', sellerRoutes);
 
 // Post routes (mixed auth — routes handle their own auth internally)
 app.use('/api/posts', postRoutes);
 
 // Image upload endpoint — dev mode: no auth; prod: add authMiddleware
-const uploadMiddleware = isDev
-  ? [uploadLimiter, upload.array('images', 5)]
-  : [authMiddleware, uploadLimiter, upload.array('images', 5)];
+// Upload middleware — no auth during testing phase
+const uploadMiddleware = [uploadLimiter, upload.array('images', 5)];
 app.post(
   '/api/upload',
   ...uploadMiddleware,
