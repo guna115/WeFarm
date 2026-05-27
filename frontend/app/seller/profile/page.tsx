@@ -15,7 +15,8 @@ import {
   Eye,
   Settings,
   LogOut,
-  Store
+  Store,
+  Loader2
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,8 +32,9 @@ export default function SellerProfileDashboard() {
 
   useEffect(() => {
     // If no profile, force them to edit page immediately
-    if (seller && !seller.profile_complete) {
+    if (!seller || !seller.profile_complete) {
       router.replace('/seller/profile/edit');
+      return;
     }
     
     // Fetch quick stats (like total posts)
@@ -53,7 +55,13 @@ export default function SellerProfileDashboard() {
     }
   };
 
-  if (!seller) return null; // Let ProtectedRoute handle it
+  if (!seller) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-50">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
 
   return (
     <ProtectedRoute requireProfile>
