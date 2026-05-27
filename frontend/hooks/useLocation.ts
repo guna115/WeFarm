@@ -53,9 +53,9 @@ export function useLocation(): UseLocationReturn {
         setLoading(false);
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000, // Cache for 1 minute
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 300000, // Cache for 5 minutes
       }
     );
   }, []);
