@@ -127,8 +127,13 @@ export default function SellerEditProfilePage() {
       });
 
       if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.message || 'Failed to save profile');
+        const errText = await response.text();
+        let errMsg = `Status: ${response.status}`;
+        try {
+          const errObj = JSON.parse(errText);
+          if (errObj.message) errMsg = errObj.message;
+        } catch (e) {}
+        throw new Error(errMsg);
       }
 
       // Refresh auth context
@@ -138,7 +143,7 @@ export default function SellerEditProfilePage() {
       router.push('/seller/profile');
     } catch (error: any) {
       console.error('Profile save error:', error);
-      alert(error.message || 'Failed to save profile. Please try again.');
+      alert(`API URL: ${API_URL}\nError: ${error.message}`);
     } finally {
       setLoading(false);
     }
