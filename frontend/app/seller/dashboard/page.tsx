@@ -87,56 +87,68 @@ export default function SellerDashboardPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-surface-50 pb-24">
         {/* Header */}
-        <div className="relative overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-emerald-800" />
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+        <div className="relative pt-6 pb-6 px-4 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] rounded-b-3xl border-b border-surface-100 mb-4 z-10">
           
-          <div className="relative px-4 pt-6 pb-5">
-            {/* Top row: Profile + Logout */}
-            <div className="flex items-start justify-between mb-5">
-              <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
-                  <span className="text-2xl font-black text-white">{seller?.nursery_name?.charAt(0)?.toUpperCase() || 'N'}</span>
-                </div>
-                <div>
-                  <h1 className="text-xl font-black text-white leading-tight tracking-tight">
-                    {seller?.nursery_name || t('seller.setupNursery')}
-                  </h1>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="flex items-center gap-1 text-xs font-semibold text-white/80">
-                      <MapPin className="w-3 h-3" /> {seller?.district || '—'}
-                    </span>
-                    <span className="w-1 h-1 rounded-full bg-white/40" />
-                    <span className="text-xs font-semibold text-white/80">
-                      {seller?.phone_number || user?.phoneNumber || '—'}
-                    </span>
-                  </div>
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              {/* Avatar */}
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center shadow-sm border border-primary-200/50 relative overflow-hidden">
+                <span className="text-3xl font-black text-primary-700/80">
+                  {seller?.nursery_name?.charAt(0)?.toUpperCase() || 'N'}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent" />
+              </div>
+              
+              {/* Info */}
+              <div className="pt-1">
+                <h1 className="text-2xl font-black text-surface-900 leading-tight tracking-tight mb-1">
+                  {seller?.nursery_name || t('seller.setupNursery')}
+                </h1>
+                <div className="flex flex-col gap-1">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-surface-500">
+                    <MapPin className="w-3.5 h-3.5 text-primary-500" /> {seller?.district || 'Setup Profile'}
+                  </span>
+                  <span className="text-xs font-semibold text-surface-400 pl-5">
+                    {seller?.phone_number || user?.phoneNumber || '—'}
+                  </span>
                 </div>
               </div>
-              <button
-                onClick={handleLogout}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-colors border border-white/20 mt-1"
-              >
-                <LogOut className="w-4 h-4 text-white" />
-              </button>
             </div>
             
-            {/* Stats card */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3.5 border border-white/20">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Sprout className="w-4 h-4 text-emerald-200" />
-                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">{t('seller.active')}</span>
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              className="w-10 h-10 flex items-center justify-center rounded-2xl bg-surface-50 hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors border border-surface-200"
+            >
+              <LogOut className="w-4.5 h-4.5" />
+            </button>
+          </div>
+          
+          {/* Stats card */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-surface-50 rounded-2xl p-4 border border-surface-200 flex flex-col justify-center shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-primary-100 rounded-lg">
+                  <Sprout className="w-4 h-4 text-primary-600" />
                 </div>
-                <span className="text-3xl font-black text-white">{myPosts.length}</span>
+                <span className="text-[11px] font-bold text-surface-500 uppercase tracking-wider">{t('seller.active')}</span>
               </div>
-              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3.5 border border-white/20">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Eye className="w-4 h-4 text-emerald-200" />
-                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">{t('seller.profile')}</span>
+              <span className="text-3xl font-black text-surface-900">{myPosts.length}</span>
+            </div>
+            
+            <div className="bg-surface-50 rounded-2xl p-4 border border-surface-200 flex flex-col justify-center shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Eye className="w-4 h-4 text-blue-600" />
                 </div>
-                <span className="text-3xl font-black text-white">{seller?.profile_complete ? '✓' : '—'}</span>
+                <span className="text-[11px] font-bold text-surface-500 uppercase tracking-wider">{t('seller.profile')}</span>
+              </div>
+              <div className="flex items-center h-[36px]">
+                {seller?.profile_complete ? (
+                  <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full">Complete</span>
+                ) : (
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-full">Pending</span>
+                )}
               </div>
             </div>
           </div>
