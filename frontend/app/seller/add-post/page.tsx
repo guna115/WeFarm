@@ -315,7 +315,7 @@ export default function AddPostPage() {
                 </div>
               </div>
             )}
-
+            {canProceed && (
               <button onClick={() => { stopCamera(); setStep('details'); }} className="w-full btn-primary mt-6 py-4 text-base">
                 {t('addPost.nextAddDetails')} →
               </button>
