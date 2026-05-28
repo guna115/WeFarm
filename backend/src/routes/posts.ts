@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import pool from '../config/db';
-import { calculateDistance } from '../utils/distance';
+import { calculateDistance, getRoadDistances } from '../utils/distance';
 import { authMiddleware, AuthenticatedRequest } from '../middleware/auth';
 import { deleteImages } from '../utils/cloudinary';
 
@@ -41,17 +41,22 @@ router.get('/nearby', async (req: Request, res: Response) => {
 
     const result = await pool.query(query, params);
 
-    // Calculate distance and filter by radius
+    // Prepare coordinates for the OSRM API
+    const postCoordinates = result.rows.map((post) => ({
+      id: post.id,
+      latitude: parseFloat(post.latitude),
+      longitude: parseFloat(post.longitude),
+    }));
+
+    // Batch calculate road distances for all posts in a single API call
+    const roadDistances = await getRoadDistances(userLat, userLng, postCoordinates);
+
+    // Map distances back to posts and filter by radius
     const postsWithDistance = result.rows
       .map((post) => ({
         ...post,
         whatsapp_number: post.seller_whatsapp || post.whatsapp_number,
-        distance_km: calculateDistance(
-          userLat,
-          userLng,
-          parseFloat(post.latitude),
-          parseFloat(post.longitude)
-        ),
+        distance_km: roadDistances[post.id] || 0, // Fallback to 0 if something went wrong
       }))
       .filter((post) => post.distance_km <= maxRadius)
       .sort((a, b) => a.distance_km - b.distance_km);
