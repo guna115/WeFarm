@@ -87,6 +87,9 @@
     "category": "Category",
     "daysOld": "Days Old",
     "pickupAddress": "Pickup Address",
+    "liveLocation": "Live Location",
+    "updateLocation": "Update your live location",
+    "courierAvailable": "Courier Available?",
     "publishPost": "Publish Post"
   },
   "categories": {

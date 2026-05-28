@@ -17,11 +17,13 @@ import {
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 import { API_URL } from '@/lib/config';
 
 export default function AddPostPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, seller } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -237,7 +239,7 @@ export default function AddPostPage() {
                 <ArrowLeft className="w-5 h-5 text-surface-700" />
               </button>
               <h1 className="text-lg font-bold text-surface-900">
-                {step === 'camera' ? 'Capture Photos' : 'Plant Details'}
+                {step === 'camera' ? t('addPost.capturePhotos') : t('addPost.plantDetails')}
               </h1>
             </div>
             <div className="flex items-center gap-2">
@@ -255,12 +257,12 @@ export default function AddPostPage() {
                 <div className="w-24 h-24 rounded-full bg-primary-50 flex items-center justify-center mb-6">
                   <Camera className="w-12 h-12 text-primary-500" />
                 </div>
-                <h3 className="text-lg font-bold text-surface-800 mb-2">Live Photos Only</h3>
+                <h3 className="text-lg font-bold text-surface-800 mb-2">{t('addPost.livePhotosOnly')}</h3>
                 <p className="text-sm text-surface-500 text-center max-w-xs mb-6">
-                  Take fresh photos of your plants using the camera. Gallery uploads are not allowed.
+                  {t('addPost.livePhotosDescription')}
                 </p>
                 <button onClick={startCamera} className="btn-primary text-base">
-                  <Camera className="w-5 h-5 mr-2 inline" /> Open Camera
+                  <Camera className="w-5 h-5 mr-2 inline" />{t('addPost.openCamera')}
                 </button>
               </div>
             )}
@@ -270,8 +272,8 @@ export default function AddPostPage() {
                 <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mb-4">
                   <Camera className="w-10 h-10 text-red-400" />
                 </div>
-                <p className="text-sm text-red-600 font-medium max-w-xs">{cameraError}</p>
-                <button onClick={startCamera} className="mt-4 btn-secondary text-sm">Try Again</button>
+                <p className="text-sm text-red-600 font-medium max-w-xs">{t('addPost.cameraError')}</p>
+                <button onClick={startCamera} className="mt-4 btn-secondary text-sm">{t('common.refresh')}</button>
               </div>
             )}
 
@@ -299,7 +301,7 @@ export default function AddPostPage() {
             {capturedImages.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-sm font-bold text-surface-700 mb-3 flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4" /> Captured ({capturedImages.length})
+                  <ImageIcon className="w-4 h-4" /> {t('addPost.captured')} ({capturedImages.length})
                 </h3>
                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                   {capturedImages.map((img, i) => (
@@ -314,9 +316,8 @@ export default function AddPostPage() {
               </div>
             )}
 
-            {canProceed && (
               <button onClick={() => { stopCamera(); setStep('details'); }} className="w-full btn-primary mt-6 py-4 text-base">
-                Next: Add Details →
+                {t('addPost.nextAddDetails')} →
               </button>
             )}
           </div>
@@ -339,38 +340,38 @@ export default function AddPostPage() {
 
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-                <Sprout className="w-4 h-4 text-primary-600" /> Plant / Seed Name *
+                <Sprout className="w-4 h-4 text-primary-600" /> {t('addPost.plantName')} *
               </label>
               <input name="plant_name" value={formData.plant_name} onChange={handleChange} placeholder="e.g. Tomato Seedlings" className="input-field" required />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-surface-700 mb-2 block">Category</label>
+              <label className="text-sm font-semibold text-surface-700 mb-2 block">{t('addPost.category')}</label>
               <select name="category" value={formData.category} onChange={handleChange} className="input-field">
-                <option value="tomato">🍅 Tomato</option>
-                <option value="chilli">🌶️ Chilli</option>
-                <option value="brinjal">🍆 Brinjal</option>
-                <option value="cauliflower">🥦 Cauliflower</option>
-                <option value="cabbage">🥬 Cabbage</option>
-                <option value="onion">🧅 Onion</option>
-                <option value="capsicum">🫑 Capsicum</option>
-                <option value="gourd">🥒 Gourd</option>
-                <option value="leafy">🥗 Leafy Greens</option>
-                <option value="flower">🌸 Flower</option>
-                <option value="fruit">🍈 Fruit</option>
+                <option value="tomato">🍅 {t('categories.tomato')}</option>
+                <option value="chilli">🌶️ {t('categories.chilli')}</option>
+                <option value="brinjal">🍆 {t('categories.brinjal')}</option>
+                <option value="cauliflower">🥦 {t('categories.cauliflower')}</option>
+                <option value="cabbage">🥬 {t('categories.cabbage')}</option>
+                <option value="onion">🧅 {t('categories.onion')}</option>
+                <option value="capsicum">🫑 {t('categories.capsicum')}</option>
+                <option value="gourd">🥒 {t('categories.gourd')}</option>
+                <option value="leafy">🥗 {t('categories.leafy')}</option>
+                <option value="flower">🌸 {t('categories.flower')}</option>
+                <option value="fruit">🍈 {t('categories.fruit')}</option>
               </select>
             </div>
 
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-                <Calendar className="w-4 h-4 text-primary-600" /> Days Old *
+                <Calendar className="w-4 h-4 text-primary-600" /> {t('addPost.daysOld')} *
               </label>
               <input name="days_old" type="number" min="1" max="365" value={formData.days_old} onChange={handleChange} placeholder="e.g. 15" className="input-field" required />
             </div>
 
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-                <MapPin className="w-4 h-4 text-primary-600" /> Pickup Address *
+                <MapPin className="w-4 h-4 text-primary-600" /> {t('addPost.pickupAddress')} *
               </label>
               <input name="address" value={formData.address} onChange={handleChange} placeholder="e.g. Kavali, Nellore District" className="input-field" required />
             </div>
@@ -382,9 +383,9 @@ export default function AddPostPage() {
                     <MapPin className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-surface-800">Live Location</p>
+                    <p className="text-sm font-bold text-surface-800">{t('addPost.liveLocation')}</p>
                     <p className="text-xs text-surface-500">
-                      {locationCaptured ? `${Number(formData.latitude).toFixed(4)}, ${Number(formData.longitude).toFixed(4)}` : 'Update your live location'}
+                      {locationCaptured ? `${Number(formData.latitude).toFixed(4)}, ${Number(formData.longitude).toFixed(4)}` : t('addPost.updateLocation')}
                     </p>
                   </div>
                 </div>
@@ -397,7 +398,7 @@ export default function AddPostPage() {
             <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-surface-200">
               <div className="flex items-center gap-3">
                 <Truck className="w-5 h-5 text-primary-600" />
-                <span className="text-sm font-bold text-surface-800">Courier Available?</span>
+                <span className="text-sm font-bold text-surface-800">{t('addPost.courierAvailable')}</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" name="courier_available" checked={formData.courier_available} onChange={handleChange} className="sr-only peer" />
@@ -413,7 +414,7 @@ export default function AddPostPage() {
             )}
 
             <button type="submit" disabled={loading || !canSubmit} className="w-full btn-primary py-4 text-base flex items-center justify-center gap-2">
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-5 h-5" /> Publish Post</>}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-5 h-5" /> {t('addPost.publishPost')}</>}
             </button>
           </form>
         )}

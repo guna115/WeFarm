@@ -39,10 +39,10 @@ export default function BuyerFeedPage() {
           location?.longitude
         );
       } else {
-        // Nearby mode (default)
+        // Nearby mode (default) — show ALL posts in India, sorted by distance
         const lat = location?.latitude || 15.5; // Default to AP center if no location
         const lng = location?.longitude || 80.0;
-        const radius = location ? 100 : 500; // Wider radius if no precise location
+        const radius = 10000; // Show all posts (no distance limit)
 
         data = await getNearbyPosts(lat, lng, radius, selectedCategory);
       }

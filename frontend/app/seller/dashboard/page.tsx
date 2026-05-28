@@ -87,35 +87,58 @@ export default function SellerDashboardPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-surface-50 pb-24">
         {/* Header */}
-        <div className="bg-gradient-to-b from-primary-600 to-primary-700 px-4 pt-6 pb-8 sticky top-0 z-30 shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
-                <Store className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-white leading-tight">
-                  {seller?.nursery_name || 'My Nursery'}
-                </h1>
-                <p className="text-xs font-medium text-primary-100 flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> {seller?.district || 'Setup Profile'}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
-            >
-              <LogOut className="w-4 h-4 text-white" />
-            </button>
-          </div>
+        <div className="relative overflow-hidden">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-emerald-800" />
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
           
-          <div className="flex items-center justify-between bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 mt-2">
-            <div className="flex items-center gap-2">
-              <Sprout className="w-4 h-4 text-primary-100" />
-              <span className="text-sm font-medium text-white">{t('seller.active')}</span>
+          <div className="relative px-4 pt-6 pb-5">
+            {/* Top row: Profile + Logout */}
+            <div className="flex items-start justify-between mb-5">
+              <div className="flex items-center gap-3.5">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
+                  <span className="text-2xl font-black text-white">{seller?.nursery_name?.charAt(0)?.toUpperCase() || 'N'}</span>
+                </div>
+                <div>
+                  <h1 className="text-xl font-black text-white leading-tight tracking-tight">
+                    {seller?.nursery_name || t('seller.setupNursery')}
+                  </h1>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="flex items-center gap-1 text-xs font-semibold text-white/80">
+                      <MapPin className="w-3 h-3" /> {seller?.district || '—'}
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-white/40" />
+                    <span className="text-xs font-semibold text-white/80">
+                      {seller?.phone_number || user?.phoneNumber || '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-colors border border-white/20 mt-1"
+              >
+                <LogOut className="w-4 h-4 text-white" />
+              </button>
             </div>
-            <span className="text-lg font-bold text-white bg-primary-800/50 px-3 py-0.5 rounded-lg">{myPosts.length}</span>
+            
+            {/* Stats card */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3.5 border border-white/20">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Sprout className="w-4 h-4 text-emerald-200" />
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">{t('seller.active')}</span>
+                </div>
+                <span className="text-3xl font-black text-white">{myPosts.length}</span>
+              </div>
+              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3.5 border border-white/20">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Eye className="w-4 h-4 text-emerald-200" />
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">{t('seller.profile')}</span>
+                </div>
+                <span className="text-3xl font-black text-white">{seller?.profile_complete ? '✓' : '—'}</span>
+              </div>
+            </div>
           </div>
         </div>
 
