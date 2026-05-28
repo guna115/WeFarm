@@ -87,13 +87,20 @@ export default function SellerDashboardPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-surface-50 pb-24">
         {/* Header */}
-        <div className="relative pt-6 pb-6 px-4 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] rounded-b-3xl border-b border-surface-100 mb-4 z-10">
+        <div className="relative pt-8 pb-6 px-4 rounded-b-[2rem] mb-5 z-10 overflow-hidden shadow-[0_4px_20px_-10px_rgba(16,185,129,0.3)]">
           
-          <div className="flex items-start justify-between mb-6">
+          {/* Colorful Soft Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100" />
+          
+          {/* Decorative Glowing Orbs */}
+          <div className="absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br from-emerald-300 to-teal-400 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+          <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-gradient-to-tr from-green-300 to-emerald-400 rounded-full blur-3xl opacity-40 mix-blend-multiply" />
+          
+          <div className="relative flex items-start justify-between mb-6">
             <div className="flex items-center gap-4">
               {/* Avatar */}
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center shadow-sm border border-primary-200/50 relative overflow-hidden">
-                <span className="text-3xl font-black text-primary-700/80">
+              <div className="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 border border-white/50 relative overflow-hidden">
+                <span className="text-3xl font-black text-white drop-shadow-md">
                   {seller?.nursery_name?.charAt(0)?.toUpperCase() || 'N'}
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent" />
@@ -105,10 +112,10 @@ export default function SellerDashboardPage() {
                   {seller?.nursery_name || t('seller.setupNursery')}
                 </h1>
                 <div className="flex flex-col gap-1">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-surface-500">
-                    <MapPin className="w-3.5 h-3.5 text-primary-500" /> {seller?.district || 'Setup Profile'}
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-teal-700">
+                    <MapPin className="w-3.5 h-3.5" /> {seller?.district || 'Setup Profile'}
                   </span>
-                  <span className="text-xs font-semibold text-surface-400 pl-5">
+                  <span className="text-xs font-semibold text-emerald-700/80 pl-5">
                     {seller?.phone_number || user?.phoneNumber || '—'}
                   </span>
                 </div>
