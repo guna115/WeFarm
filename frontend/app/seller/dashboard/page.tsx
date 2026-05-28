@@ -86,36 +86,26 @@ export default function SellerDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-surface-50 pb-24">
-        {/* Header */}
-        <div className="relative pt-8 pb-6 px-4 rounded-b-[2rem] mb-5 z-10 overflow-hidden shadow-[0_4px_20px_-10px_rgba(16,185,129,0.3)]">
-          
-          {/* Colorful Soft Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100" />
-          
-          {/* Decorative Glowing Orbs */}
-          <div className="absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br from-emerald-300 to-teal-400 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
-          <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-gradient-to-tr from-green-300 to-emerald-400 rounded-full blur-3xl opacity-40 mix-blend-multiply" />
-          
-          <div className="relative flex items-start justify-between mb-6">
-            <div className="flex items-center gap-4">
-              {/* Avatar */}
-              <div className="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 border border-white/50 relative overflow-hidden">
-                <span className="text-3xl font-black text-white drop-shadow-md">
-                  {seller?.nursery_name?.charAt(0)?.toUpperCase() || 'N'}
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent" />
+        {/* Header - Compact & Elegant */}
+        <div className="bg-white px-4 pt-6 pb-4 border-b border-surface-200 shadow-sm sticky top-0 z-30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {/* Compact Avatar */}
+              <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center border border-primary-100 shadow-sm">
+                <Store className="w-6 h-6 text-primary-600" />
               </div>
               
               {/* Info */}
-              <div className="pt-1">
-                <h1 className="text-2xl font-black text-surface-900 leading-tight tracking-tight mb-1">
+              <div>
+                <h1 className="text-lg font-bold text-surface-900 leading-tight">
                   {seller?.nursery_name || t('seller.setupNursery')}
                 </h1>
-                <div className="flex flex-col gap-1">
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-teal-700">
-                    <MapPin className="w-3.5 h-3.5" /> {seller?.district || 'Setup Profile'}
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="flex items-center gap-1 text-xs font-medium text-surface-500">
+                    <MapPin className="w-3 h-3 text-primary-500" /> {seller?.district || 'Setup Profile'}
                   </span>
-                  <span className="text-xs font-semibold text-emerald-700/80 pl-5">
+                  <span className="w-1 h-1 rounded-full bg-surface-300" />
+                  <span className="text-xs font-medium text-surface-500">
                     {seller?.phone_number || user?.phoneNumber || '—'}
                   </span>
                 </div>
@@ -125,38 +115,32 @@ export default function SellerDashboardPage() {
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className="w-10 h-10 flex items-center justify-center rounded-2xl bg-surface-50 hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors border border-surface-200"
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors"
             >
-              <LogOut className="w-4.5 h-4.5" />
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
           
-          {/* Stats card */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-surface-50 rounded-2xl p-4 border border-surface-200 flex flex-col justify-center shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-primary-100 rounded-lg">
-                  <Sprout className="w-4 h-4 text-primary-600" />
-                </div>
-                <span className="text-[11px] font-bold text-surface-500 uppercase tracking-wider">{t('seller.active')}</span>
+          {/* Compact Stats Row */}
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-surface-100">
+            <div className="flex-1 flex items-center justify-between bg-surface-50 rounded-xl px-3 py-2 border border-surface-100">
+              <div className="flex items-center gap-2">
+                <Sprout className="w-4 h-4 text-primary-600" />
+                <span className="text-xs font-semibold text-surface-600 uppercase">{t('seller.active')}</span>
               </div>
-              <span className="text-3xl font-black text-surface-900">{myPosts.length}</span>
+              <span className="text-base font-bold text-surface-900">{myPosts.length}</span>
             </div>
             
-            <div className="bg-surface-50 rounded-2xl p-4 border border-surface-200 flex flex-col justify-center shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Eye className="w-4 h-4 text-blue-600" />
-                </div>
-                <span className="text-[11px] font-bold text-surface-500 uppercase tracking-wider">{t('seller.profile')}</span>
+            <div className="flex-1 flex items-center justify-between bg-surface-50 rounded-xl px-3 py-2 border border-surface-100">
+              <div className="flex items-center gap-2">
+                <Eye className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-semibold text-surface-600 uppercase">{t('seller.profile')}</span>
               </div>
-              <div className="flex items-center h-[36px]">
-                {seller?.profile_complete ? (
-                  <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full">Complete</span>
-                ) : (
-                  <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-full">Pending</span>
-                )}
-              </div>
+              {seller?.profile_complete ? (
+                <span className="text-xs font-bold text-green-600">Complete</span>
+              ) : (
+                <span className="text-xs font-bold text-amber-600">Pending</span>
+              )}
             </div>
           </div>
         </div>
