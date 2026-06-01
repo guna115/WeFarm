@@ -123,6 +123,38 @@ router.get('/search', async (req: Request, res: Response) => {
 });
 
 /**
+ * GET /posts/category/:category — Get all posts for a specific category (PUBLIC)
+ * Used for Programmatic SEO pages
+ */
+router.get('/category/:category', async (req: Request, res: Response) => {
+  try {
+    const { category } = req.params;
+
+    const result = await pool.query(
+      `SELECT p.*, s.nursery_name, s.whatsapp_number as seller_whatsapp, s.district
+       FROM posts p
+       JOIN sellers s ON p.seller_id = s.id
+       WHERE p.expires_at > NOW()
+         AND s.is_banned = false
+         AND p.category = $1
+       ORDER BY p.created_at DESC
+       LIMIT 100`,
+      [category]
+    );
+
+    const posts = result.rows.map((post) => ({
+      ...post,
+      whatsapp_number: post.seller_whatsapp || post.whatsapp_number,
+    }));
+
+    res.json({ posts, total: posts.length });
+  } catch (error) {
+    console.error('Error fetching posts by category:', error);
+    res.status(500).json({ message: 'Failed to fetch category posts' });
+  }
+});
+
+/**
  * POST /posts/create — Create a new post
  * Dev mode: accepts seller_id from body
  * Prod mode: derives seller_id from auth token

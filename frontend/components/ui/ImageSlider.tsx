@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface ImageSliderProps {
   images: string[];
@@ -60,11 +61,12 @@ export default function ImageSlider({ images, plantName }: ImageSliderProps) {
       >
         {images.map((src, i) => (
           <div key={i} className="min-w-full h-full relative flex-shrink-0">
-            <img
+            <Image
               src={src}
               alt={`${plantName} photo ${i + 1}`}
-              className="w-full h-full object-cover"
-              loading="lazy"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
         ))}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wefarm.live'),
@@ -64,6 +65,7 @@ export default function RootLayout({
             <main className="w-full relative">{children}</main>
           </LanguageProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );

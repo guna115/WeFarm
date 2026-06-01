@@ -202,4 +202,47 @@ router.get('/id', async (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+/**
+ * GET /seller/:id/public — Get public seller profile & active posts (PUBLIC)
+ * Used for Programmatic SEO pages
+ */
+router.get('/:id/public', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch seller details (without private info)
+    const sellerResult = await pool.query(
+      'SELECT id, nursery_name, address, district, state, latitude, longitude, courier_available FROM sellers WHERE id = $1 AND is_banned = false',
+      [id]
+    );
+
+    if (sellerResult.rows.length === 0) {
+      res.status(404).json({ message: 'Seller not found' });
+      return;
+    }
+
+    const seller = sellerResult.rows[0];
+
+    // Fetch seller's active posts
+    const postsResult = await pool.query(
+      `SELECT p.*, s.nursery_name, s.whatsapp_number as seller_whatsapp
+       FROM posts p
+       JOIN sellers s ON p.seller_id = s.id
+       WHERE p.seller_id = $1 AND p.expires_at > NOW()
+       ORDER BY p.created_at DESC`,
+      [id]
+    );
+
+    const posts = postsResult.rows.map((post) => ({
+      ...post,
+      whatsapp_number: post.seller_whatsapp || post.whatsapp_number,
+    }));
+
+    res.json({ seller, posts });
+  } catch (error) {
+    console.error('Error fetching public seller profile:', error);
+    res.status(500).json({ message: 'Failed to fetch seller profile' });
+  }
+});
+
 export default router;
