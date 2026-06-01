@@ -85,9 +85,9 @@ export default function SellerDashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-surface-50 pb-24">
+      <div className="min-h-screen bg-surface-50 pb-24 max-w-5xl mx-auto border-x border-surface-200 shadow-sm">
         {/* Header - Compact & Elegant */}
-        <div className="bg-white px-4 pt-6 pb-4 border-b border-surface-200 shadow-sm sticky top-0 z-30">
+        <div className="bg-white px-4 pt-6 pb-4 border-b border-surface-200 sticky top-0 z-30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Compact Avatar */}
@@ -159,16 +159,16 @@ export default function SellerDashboardPage() {
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 md:grid-cols-3 gap-4 px-4">
             {loading && (
-              <div className="px-4 space-y-4">
+              <>
                 <PostCardSkeleton />
                 <PostCardSkeleton />
-              </div>
+              </>
             )}
 
             {!loading && myPosts.map((post) => (
-                <div key={post.id} className="relative bg-white shadow-sm border-y border-surface-200 sm:border-x sm:mx-4 sm:rounded-2xl">
+                <div key={post.id} className="relative bg-white shadow-sm border border-surface-200 rounded-2xl overflow-hidden">
                   {/* Delete Button overlaid on the PostCard */}
                   <div className="absolute top-4 right-4 z-20">
                     <button
@@ -184,8 +184,7 @@ export default function SellerDashboardPage() {
                     </button>
                   </div>
                   
-                  {/* The actual PostCard, pointer-events-none on buttons so seller doesn't call themselves? 
-                      Actually it's fine, they can test their own buttons */}
+                  {/* The actual PostCard */}
                   <PostCard post={post} />
                 </div>
               ))}

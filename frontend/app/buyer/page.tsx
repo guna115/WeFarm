@@ -158,14 +158,15 @@ export default function BuyerFeedPage() {
       </div>
 
       {/* Feed */}
-      <div className="px-4 pt-4 space-y-4">
+      <div className="max-w-7xl mx-auto px-4 pt-4 space-y-4">
         {/* Loading skeletons */}
         {loading && (
-          <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <PostCardSkeleton />
             <PostCardSkeleton />
             <PostCardSkeleton />
-          </>
+            <PostCardSkeleton />
+          </div>
         )}
 
         {/* Error state */}
@@ -197,13 +198,15 @@ export default function BuyerFeedPage() {
                 {t('common.refresh')}
               </button>
             </div>
-            {postsWithDistance.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                onReport={handleReport}
-              />
-            ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {postsWithDistance.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onReport={handleReport}
+                />
+              ))}
+            </div>
           </>
         )}
 

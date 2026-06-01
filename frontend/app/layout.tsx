@@ -51,7 +51,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <AuthProvider>
           <LanguageProvider>
-            <main className="max-w-lg mx-auto relative">{children}</main>
+            <main className="w-full relative">{children}</main>
           </LanguageProvider>
         </AuthProvider>
       </body>

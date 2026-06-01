@@ -32,7 +32,7 @@ export default function LandingPage() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-200/10 rounded-full blur-3xl" />
 
       {/* Content */}
-      <div className={`relative z-10 flex flex-col min-h-screen px-6 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <div className={`relative z-10 flex flex-col min-h-screen max-w-5xl mx-auto w-full px-6 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
 
         {/* Header */}
         <header className="pt-8 pb-2">
@@ -95,7 +95,7 @@ export default function LandingPage() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-4 w-full">
             {/* BUY Button */}
             <button
               id="btn-buy"
