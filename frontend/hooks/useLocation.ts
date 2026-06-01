@@ -53,9 +53,9 @@ export function useLocation(): UseLocationReturn {
         setLoading(false);
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0, // Never cache, always get fresh location
+        enableHighAccuracy: false, // Don't force GPS lock, allow cell/Wi-Fi positioning (much faster)
+        timeout: 15000, // Wait up to 15 seconds
+        maximumAge: 5 * 60 * 1000, // Cache location for 5 minutes
       }
     );
   }, []);
