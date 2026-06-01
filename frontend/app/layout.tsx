@@ -4,9 +4,9 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 
 export const metadata: Metadata = {
-  title: 'WeFarm — Discover Fresh Nursery Plants Near You',
-  description:
-    'Find nearby nurseries with fresh vegetable seedlings. Connect directly with sellers. No middlemen, no payments — just real-time plant discovery.',
+  metadataBase: new URL('https://wefarm.live'),
+  title: 'WeFarm - Find Nursery Plants Near You',
+  description: 'Find tomato, chilli, brinjal, cauliflower and other nursery seedlings from nearby nurseries across India.',
   keywords: [
     'nursery',
     'plants',
@@ -17,11 +17,21 @@ export const metadata: Metadata = {
     'nearby nursery',
     'plant discovery',
   ],
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: 'WeFarm — Discover Fresh Nursery Plants Near You',
-    description:
-      'Real-time nursery discovery platform for farmers and plant lovers.',
+    title: 'WeFarm - Find Nursery Plants Near You',
+    description: 'Find tomato, chilli, brinjal, cauliflower and other nursery seedlings from nearby nurseries across India.',
+    url: 'https://wefarm.live',
+    siteName: 'WeFarm',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WeFarm - Find Nursery Plants Near You',
+    description: 'Find tomato, chilli, brinjal, cauliflower and other nursery seedlings from nearby nurseries across India.',
   },
 };
 
