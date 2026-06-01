@@ -1,11 +1,15 @@
 import { MetadataRoute } from 'next';
-import { categories } from '@/components/ui/CategoryFilter';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://wefarm.live';
+  
+  const categories = [
+    'tomato', 'chilli', 'brinjal', 'cauliflower', 'cabbage', 
+    'onion', 'capsicum', 'gourd', 'leafy', 'flower', 'fruit'
+  ];
 
-  const categoryUrls = categories.filter(c => c.id !== 'all').map((cat) => ({
-    url: `${baseUrl}/plants/${cat.id}`,
+  const categoryUrls = categories.map((cat) => ({
+    url: `${baseUrl}/plants/${cat}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.8,
