@@ -21,6 +21,7 @@ import PostCardSkeleton from '@/components/buyer/PostCardSkeleton';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/LanguageContext';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 
 import { API_URL } from '@/lib/config';
 
@@ -112,13 +113,16 @@ export default function SellerDashboardPage() {
               </div>
             </div>
             
-            {/* Logout */}
-            <button
-              onClick={handleLogout}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            {/* Logout & Language */}
+            <div className="flex items-center gap-3">
+              <LanguageToggle />
+              <button
+                onClick={handleLogout}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           
           {/* Compact Stats Row */}

@@ -11,6 +11,7 @@ import ReportModal from '@/components/buyer/ReportModal';
 import { useLocation, calculateDistance } from '@/hooks/useLocation';
 import { getNearbyPosts, searchPosts } from '@/services/api';
 import { useTranslation } from '@/contexts/LanguageContext';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 
 export default function BuyerFeedPage() {
   const router = useRouter();
@@ -117,6 +118,7 @@ export default function BuyerFeedPage() {
               placeholder={t('common.search')}
             />
           </div>
+          <LanguageToggle />
         </div>
 
         {/* Location status */}
