@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { ArrowLeft, MapPin, Loader2, MapPinOff, RefreshCw, Map as MapIcon, List } from 'lucide-react';
+import { ArrowLeft, MapPin, Loader2, MapPinOff, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import SearchBar from '@/components/ui/SearchBar';
 import CategoryFilter from '@/components/ui/CategoryFilter';
 import PostCard, { type Post } from '@/components/buyer/PostCard';
@@ -13,15 +12,6 @@ import { useLocation, calculateDistance } from '@/hooks/useLocation';
 import { getNearbyPosts, searchPosts } from '@/services/api';
 import { useTranslation } from '@/contexts/LanguageContext';
 import LanguageToggle from '@/components/ui/LanguageToggle';
-
-const MapComponent = dynamic(() => import('@/components/buyer/MapComponent'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-[70vh] w-full bg-surface-100 animate-pulse rounded-2xl flex items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin text-surface-400" />
-    </div>
-  ),
-});
 
 export default function BuyerFeedPage() {
   const router = useRouter();
@@ -33,7 +23,6 @@ export default function BuyerFeedPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reportPostId, setReportPostId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   // Fetch posts from API
   const fetchPosts = useCallback(async () => {
@@ -213,44 +202,15 @@ export default function BuyerFeedPage() {
                 {t('common.refresh')}
               </button>
             </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex bg-surface-200 p-1 rounded-xl mb-4 max-w-xs mx-auto md:mx-0">
-              <button
-                onClick={() => setViewMode('list')}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
-                  viewMode === 'list' ? 'bg-white shadow-sm text-surface-900' : 'text-surface-600 hover:text-surface-900'
-                }`}
-              >
-                <List className="w-4 h-4" /> List
-              </button>
-              <button
-                onClick={() => setViewMode('map')}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
-                  viewMode === 'map' ? 'bg-white shadow-sm text-surface-900' : 'text-surface-600 hover:text-surface-900'
-                }`}
-              >
-                <MapIcon className="w-4 h-4" /> Map
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {postsWithDistance.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onReport={handleReport}
+                />
+              ))}
             </div>
-
-            {viewMode === 'list' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {postsWithDistance.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onReport={handleReport}
-                  />
-                ))}
-              </div>
-            ) : (
-              <MapComponent 
-                posts={postsWithDistance} 
-                userLat={location?.latitude} 
-                userLng={location?.longitude} 
-              />
-            )}
           </>
         )}
 

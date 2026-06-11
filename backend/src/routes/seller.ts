@@ -136,7 +136,7 @@ router.get('/posts', async (req: AuthenticatedRequest, res: Response) => {
     const result = await pool.query(
       `SELECT p.* FROM posts p
        JOIN sellers s ON p.seller_id = s.id
-       WHERE s.phone_number = $1
+       WHERE s.phone_number = $1 AND p.expires_at > NOW()
        ORDER BY p.created_at DESC`,
       [phoneNumber]
     );
@@ -162,7 +162,7 @@ router.get('/posts-by-phone', async (req: Request, res: Response) => {
     const result = await pool.query(
       `SELECT p.* FROM posts p
        JOIN sellers s ON p.seller_id = s.id
-       WHERE s.phone_number = $1
+       WHERE s.phone_number = $1 AND p.expires_at > NOW()
        ORDER BY p.created_at DESC`,
       [phone]
     );
