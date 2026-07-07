@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import PushNotificationProvider from '@/components/providers/PushNotificationProvider';
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
@@ -62,7 +63,9 @@ export default function RootLayout({
       <body className="min-h-screen">
         <AuthProvider>
           <LanguageProvider>
-            <main className="w-full relative">{children}</main>
+            <PushNotificationProvider>
+              <main className="w-full relative">{children}</main>
+            </PushNotificationProvider>
           </LanguageProvider>
         </AuthProvider>
         <Analytics />

@@ -1,16 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import {
   MapPin,
-  Phone,
-  Clock,
   Truck,
+  Phone,
+  ShieldCheck,
+  ChevronRight,
+  Clock,
   Calendar,
   Flag,
   Share2,
+  Star,
 } from 'lucide-react';
 import ImageSlider from '@/components/ui/ImageSlider';
 import { useTranslation } from '@/contexts/LanguageContext';
+import Link from 'next/link';
 
 export interface Post {
   id: string;
@@ -29,6 +34,7 @@ export interface Post {
   created_at: string;
   expires_at: string;
   distance_km?: number;
+  average_rating?: number | string;
 }
 
 interface PostCardProps {
@@ -84,10 +90,19 @@ export default function PostCard({ post, onReport }: PostCardProps) {
           <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-white font-bold text-sm shadow-md shadow-primary-500/20">
             {post.nursery_name.charAt(0).toUpperCase()}
           </div>
-          <div className="flex flex-col justify-center">
-            <h3 className="text-base font-extrabold text-surface-900 leading-none">
+          <div className="flex items-center gap-2">
+            <Link 
+              href={`/nursery/view?id=${post.seller_id}`}
+              className="text-sm font-semibold text-surface-900 hover:text-primary-600 transition-colors"
+            >
               {post.nursery_name}
-            </h3>
+            </Link>
+            {Number(post.average_rating) >= 4.0 && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                Top Rated
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">

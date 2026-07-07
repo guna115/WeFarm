@@ -42,6 +42,35 @@ async function fixSchema() {
     if (!postColNames.includes('whatsapp_number')) fixes.push("ALTER TABLE posts ADD COLUMN whatsapp_number VARCHAR(15)");
     if (!postColNames.includes('nursery_name')) fixes.push("ALTER TABLE posts ADD COLUMN nursery_name VARCHAR(100)");
 
+    // Create devices table for push notifications
+    const createDevicesTable = `
+      CREATE TABLE IF NOT EXISTS devices (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        device_id VARCHAR(255) UNIQUE NOT NULL,
+        fcm_token VARCHAR(255),
+        latitude DECIMAL,
+        longitude DECIMAL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `;
+    console.log('Ensuring devices table exists...');
+    await pool.query(createDevicesTable);
+
+    // Create ratings table for seller reviews
+    const createRatingsTable = `
+      CREATE TABLE IF NOT EXISTS ratings (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        seller_id UUID REFERENCES sellers(id) ON DELETE CASCADE,
+        device_id VARCHAR(255) NOT NULL,
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        UNIQUE(seller_id, device_id)
+      )
+    `;
+    console.log('Ensuring ratings table exists...');
+    await pool.query(createRatingsTable);
+
     if (fixes.length > 0) {
       console.log('\nApplying fixes:');
       for (const sql of fixes) {

@@ -67,12 +67,37 @@ export default function SellerEditProfilePage() {
     }
   }, [seller, user]);
 
-  const captureLocation = () => {
+  const captureLocation = async () => {
+    setLocationLoading(true);
+    try {
+      if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        let perm = await Geolocation.checkPermissions();
+        if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
+          perm = await Geolocation.requestPermissions();
+        }
+
+        if (perm.location === 'granted' || perm.coarseLocation === 'granted') {
+          const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+          setFormData((prev) => ({
+            ...prev,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }));
+          setLocationCaptured(true);
+          setLocationLoading(false);
+          return;
+        }
+      }
+    } catch (nativeErr) {
+      console.warn('Native GPS capture failed, trying web fallback', nativeErr);
+    }
+
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser');
+      setLocationLoading(false);
       return;
     }
-    setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setFormData((prev) => ({
@@ -158,134 +183,209 @@ export default function SellerEditProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-surface-50">
-        {/* Header */}
-        <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-surface-100">
-          <div className="flex items-center gap-3 px-4 py-4">
+      <div className="min-h-screen bg-slate-50 pb-12">
+        {/* Premium Header Card */}
+        <div className="bg-gradient-to-r from-emerald-600 via-primary-600 to-teal-700 text-white pt-6 pb-8 px-5 rounded-b-3xl shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
             <button
               onClick={() => router.push('/seller/profile')}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-100 hover:bg-surface-200 transition-colors"
+              type="button"
+              className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md hover:bg-white/25 text-white transition-all border border-white/20 shadow-sm"
             >
-              <ArrowLeft className="w-5 h-5 text-surface-700" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-lg font-bold text-surface-900">
-                {seller?.profile_complete ? 'Edit Profile' : 'Setup Your Nursery'}
+              <h1 className="text-xl font-black tracking-tight">
+                {seller?.profile_complete ? 'Edit Nursery Profile' : 'Setup Your Nursery'}
               </h1>
-              <p className="text-xs text-surface-500">
-                {seller?.profile_complete ? 'Update your nursery information' : 'Complete your profile to start selling'}
+              <p className="text-xs text-emerald-100 font-medium">
+                {seller?.profile_complete ? 'Keep your nursery info accurate for buyers' : 'Complete your nursery profile to start listing plants'}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-4 py-6 space-y-5">
-          {/* Nursery Name */}
-          <div>
-            <label htmlFor="nursery_name" className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-              <Store className="w-4 h-4 text-primary-600" /> Nursery Name *
-            </label>
-            <input id="nursery_name" name="nursery_name" type="text" value={formData.nursery_name} onChange={handleChange} placeholder="e.g. Green Valley Nursery" className="input-field" required />
-          </div>
-
-          {/* Owner Name */}
-          <div>
-            <label htmlFor="owner_name" className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-              <User className="w-4 h-4 text-primary-600" /> Owner Name *
-            </label>
-            <input id="owner_name" name="owner_name" type="text" value={formData.owner_name} onChange={handleChange} placeholder="e.g. Ramesh Kumar" className="input-field" required />
-          </div>
-
-          {/* Phone Numbers */}
-          <div className="grid grid-cols-2 gap-3">
+        {/* Form Container */}
+        <form onSubmit={handleSubmit} className="-mt-4 px-4 space-y-5 max-w-lg mx-auto relative z-20">
+          <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-5">
+            {/* Nursery Name */}
             <div>
-              <label htmlFor="phone_number" className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-                <Phone className="w-4 h-4 text-primary-600" /> Phone *
+              <label htmlFor="nursery_name" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <Store className="w-4 h-4 text-primary-600" /> Nursery Name *
               </label>
-              <input id="phone_number" name="phone_number" type="tel" maxLength={10} value={formData.phone_number} className="input-field bg-surface-50" readOnly />
+              <input
+                id="nursery_name"
+                name="nursery_name"
+                type="text"
+                value={formData.nursery_name}
+                onChange={handleChange}
+                placeholder="e.g. Sri Lakshmi Agri Nursery"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 outline-none text-slate-800 font-medium text-sm transition-all bg-slate-50/50 focus:bg-white"
+                required
+              />
             </div>
+
+            {/* Owner Name */}
             <div>
-              <label htmlFor="whatsapp_number" className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-                <MessageSquare className="w-4 h-4 text-green-600" /> WhatsApp
+              <label htmlFor="owner_name" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <User className="w-4 h-4 text-primary-600" /> Owner Name *
               </label>
-              <input id="whatsapp_number" name="whatsapp_number" type="tel" maxLength={10} value={formData.whatsapp_number} onChange={(e) => setFormData((prev) => ({ ...prev, whatsapp_number: e.target.value.replace(/\D/g, '') }))} placeholder="Same or different" className="input-field" />
+              <input
+                id="owner_name"
+                name="owner_name"
+                type="text"
+                value={formData.owner_name}
+                onChange={handleChange}
+                placeholder="e.g. Kumar Reddy"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 outline-none text-slate-800 font-medium text-sm transition-all bg-slate-50/50 focus:bg-white"
+                required
+              />
             </div>
-          </div>
 
-          {/* Address */}
-          <div>
-            <label htmlFor="address" className="flex items-center gap-2 text-sm font-semibold text-surface-700 mb-2">
-              <MapPin className="w-4 h-4 text-primary-600" /> Full Address *
-            </label>
-            <textarea id="address" name="address" value={formData.address} onChange={handleChange} placeholder="Enter your nursery address" rows={3} className="input-field resize-none" required />
-          </div>
+            {/* Phone & WhatsApp */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="phone_number" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                  <Phone className="w-3.5 h-3.5 text-primary-600" /> Phone *
+                </label>
+                <input
+                  id="phone_number"
+                  name="phone_number"
+                  type="tel"
+                  maxLength={10}
+                  value={formData.phone_number}
+                  className="w-full px-3.5 py-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 font-semibold text-sm cursor-not-allowed select-none"
+                  readOnly
+                />
+              </div>
+              <div>
+                <label htmlFor="whatsapp_number" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                  <MessageSquare className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp
+                </label>
+                <input
+                  id="whatsapp_number"
+                  name="whatsapp_number"
+                  type="tel"
+                  maxLength={10}
+                  value={formData.whatsapp_number}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, whatsapp_number: e.target.value.replace(/\D/g, '') }))}
+                  placeholder="WhatsApp no."
+                  className="w-full px-3.5 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-slate-800 font-medium text-sm transition-all bg-slate-50/50 focus:bg-white"
+                />
+              </div>
+            </div>
 
-          {/* District & State */}
-          <div className="grid grid-cols-2 gap-3">
+            {/* Address */}
             <div>
-              <label htmlFor="district" className="text-sm font-semibold text-surface-700 mb-2 block">District *</label>
-              <input id="district" name="district" type="text" value={formData.district} onChange={handleChange} placeholder="e.g. Nellore" className="input-field" required />
+              <label htmlFor="address" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <MapPin className="w-4 h-4 text-primary-600" /> Full Address *
+              </label>
+              <textarea
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Village / Town / Street details"
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 outline-none text-slate-800 font-medium text-sm transition-all resize-none bg-slate-50/50 focus:bg-white"
+                required
+              />
             </div>
-            <div>
-              <label htmlFor="state" className="text-sm font-semibold text-surface-700 mb-2 block">State</label>
-              <select id="state" name="state" value={formData.state} onChange={handleChange} className="input-field">
-                <option>Andhra Pradesh</option>
-                <option>Telangana</option>
-                <option>Tamil Nadu</option>
-                <option>Karnataka</option>
-                <option>Kerala</option>
-                <option>Maharashtra</option>
-                <option>Other</option>
-              </select>
+
+            {/* District & State */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="district" className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2 block">District *</label>
+                <input
+                  id="district"
+                  name="district"
+                  type="text"
+                  value={formData.district}
+                  onChange={handleChange}
+                  placeholder="e.g. Annamayya"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 outline-none text-slate-800 font-medium text-sm transition-all bg-slate-50/50 focus:bg-white"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="state" className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2 block">State</label>
+                <select
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 outline-none text-slate-800 font-medium text-sm transition-all bg-slate-50/50 focus:bg-white"
+                >
+                  <option>Andhra Pradesh</option>
+                  <option>Telangana</option>
+                  <option>Tamil Nadu</option>
+                  <option>Karnataka</option>
+                  <option>Kerala</option>
+                  <option>Maharashtra</option>
+                  <option>Other</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* GPS Location */}
-          <div className="p-4 bg-white rounded-2xl border-2 border-surface-200">
-            <div className="flex items-center justify-between">
+          {/* GPS Location & Courier Cards */}
+          <div className="bg-white rounded-3xl p-5 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-4">
+            <div className="flex items-center justify-between p-3.5 bg-blue-50/50 rounded-2xl border border-blue-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <Navigation className="w-5 h-5 text-blue-600" />
+                <div className="w-11 h-11 rounded-2xl bg-blue-500/15 flex items-center justify-center text-blue-600">
+                  <Navigation className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-surface-800">GPS Location</p>
-                  <p className="text-xs text-surface-500">
-                    {locationCaptured ? `${Number(formData.latitude).toFixed(4)}, ${Number(formData.longitude).toFixed(4)}` : 'Capture your nursery location'}
+                  <p className="text-sm font-bold text-slate-800">GPS Coordinates</p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {locationCaptured ? `${Number(formData.latitude).toFixed(4)}, ${Number(formData.longitude).toFixed(4)}` : 'Pin exact nursery position'}
                   </p>
                 </div>
               </div>
-              <button type="button" onClick={captureLocation} disabled={locationLoading} className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${locationCaptured ? 'bg-primary-50 text-primary-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
-                {locationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : locationCaptured ? '✓ Captured' : 'Capture'}
+              <button
+                type="button"
+                onClick={captureLocation}
+                disabled={locationLoading}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
+                  locationCaptured
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {locationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : locationCaptured ? '✓ Verified' : 'Detect GPS'}
               </button>
             </div>
-          </div>
 
-          {/* Courier Toggle */}
-          <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-surface-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-                <Truck className="w-5 h-5 text-primary-600" />
+            <div className="flex items-center justify-between p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 flex items-center justify-center text-emerald-600">
+                  <Truck className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-800">Courier Shipping</p>
+                  <p className="text-xs text-slate-500 font-medium">Ship orders directly to farmers</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-bold text-surface-800">Courier Available?</p>
-                <p className="text-xs text-surface-500">Can you ship plants to buyers?</p>
-              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="courier_available" checked={formData.courier_available} onChange={handleChange} className="sr-only peer" />
+                <div className="w-12 h-7 bg-slate-200 peer-focus:ring-4 peer-focus:ring-emerald-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:shadow-md after:transition-all peer-checked:bg-emerald-600" />
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" name="courier_available" checked={formData.courier_available} onChange={handleChange} className="sr-only peer" />
-              <div className="w-12 h-7 bg-surface-200 peer-focus:ring-4 peer-focus:ring-primary-300/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-500" />
-            </label>
           </div>
 
-          {/* Submit */}
-          <button type="submit" disabled={loading || !isValid} className="w-full btn-primary flex items-center justify-center gap-2 py-4 text-base mt-4">
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading || !isValid}
+            className="w-full bg-gradient-to-r from-emerald-600 via-primary-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2.5 text-base transition-all disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.99]"
+          >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                Save Profile
+                Save Nursery Profile
                 <ArrowRight className="w-5 h-5" />
               </>
             )}

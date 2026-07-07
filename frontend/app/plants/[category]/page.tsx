@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import PostCard from '@/components/buyer/PostCard';
 import { API_URL } from '@/lib/config';
-import { categories } from '@/components/ui/CategoryFilter';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,6 +8,13 @@ interface Props {
   params: {
     category: string;
   };
+}
+
+export function generateStaticParams() {
+  const cats = ['tomato', 'chilli', 'brinjal', 'cauliflower', 'cabbage', 'onion', 'capsicum', 'gourd', 'leafy', 'flower', 'fruit'];
+  return cats.map((cat) => ({
+    category: cat,
+  }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -35,7 +41,23 @@ async function getCategoryPosts(category: string) {
 
 export default async function CategoryPage({ params }: Props) {
   const posts = await getCategoryPosts(params.category);
-  const categoryObj = categories.find((c) => c.id === params.category);
+  
+  const catsList = [
+    { id: 'all', name: 'All', emoji: '🌿' },
+    { id: 'tomato', name: 'Tomato', emoji: '🍅' },
+    { id: 'chilli', name: 'Chilli', emoji: '🌶️' },
+    { id: 'brinjal', name: 'Brinjal', emoji: '🍆' },
+    { id: 'cauliflower', name: 'Cauliflower', emoji: '🥦' },
+    { id: 'cabbage', name: 'Cabbage', emoji: '🥬' },
+    { id: 'onion', name: 'Onion', emoji: '🧅' },
+    { id: 'capsicum', name: 'Capsicum', emoji: '🫑' },
+    { id: 'gourd', name: 'Gourd', emoji: '🥒' },
+    { id: 'leafy', name: 'Leafy', emoji: '🥗' },
+    { id: 'flower', name: 'Flower', emoji: '🌸' },
+    { id: 'fruit', name: 'Fruit', emoji: '🍈' },
+  ];
+  
+  const categoryObj = catsList.find((c) => c.id === params.category);
   const categoryName = categoryObj ? categoryObj.name : params.category;
   const emoji = categoryObj ? categoryObj.emoji : '🌿';
 

@@ -67,23 +67,69 @@ export default function AddPostPage() {
   const startCamera = useCallback(async () => {
     try {
       setCameraError('');
+      if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+        const { Camera, CameraResultType, CameraSource } = await import('@capacitor/camera');
+        let perm = await Camera.checkPermissions();
+        if (perm.camera !== 'granted') {
+          perm = await Camera.requestPermissions();
+        }
+        if (perm.camera === 'granted') {
+          const photo = await Camera.getPhoto({
+            quality: 85,
+            allowEditing: false,
+            resultType: CameraResultType.DataUrl,
+            source: CameraSource.Camera,
+          });
+          if (photo.dataUrl) {
+            setCapturedImages((prev) => [...prev, photo.dataUrl!]);
+          }
+          return;
+        }
+      }
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' } },
         audio: false,
       });
       setStream(mediaStream);
       setCameraActive(true);
-    } catch {
-      setCameraError('Camera access denied. Please allow camera permission to upload live photos.');
+    } catch (err: any) {
+      console.warn('Camera error:', err);
+      setCameraError('Camera access denied or cancelled. Please allow camera permission to upload live photos.');
     }
   }, []);
 
-  const captureLocation = () => {
+  const captureLocation = async () => {
+    setLocationLoading(true);
+    try {
+      if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        let perm = await Geolocation.checkPermissions();
+        if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
+          perm = await Geolocation.requestPermissions();
+        }
+
+        if (perm.location === 'granted' || perm.coarseLocation === 'granted') {
+          const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+          setFormData((prev) => ({
+            ...prev,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }));
+          setLocationCaptured(true);
+          setLocationLoading(false);
+          return;
+        }
+      }
+    } catch (nativeErr) {
+      console.warn('Native GPS capture failed, trying web fallback', nativeErr);
+    }
+
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser');
+      setLocationLoading(false);
       return;
     }
-    setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setFormData((prev) => ({

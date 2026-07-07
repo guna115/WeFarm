@@ -27,10 +27,13 @@ import { API_URL } from '@/lib/config';
 export default function SellerProfileDashboard() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, seller, logout } = useAuth();
+  const { user, seller, loading, profileLoading, logout } = useAuth();
   const [stats, setStats] = useState({ activePosts: 0 });
 
   useEffect(() => {
+    // Do not check or redirect while auth or profile is loading
+    if (loading || profileLoading) return;
+
     // If no profile, force them to edit page immediately
     if (!seller || !seller.profile_complete) {
       router.replace('/seller/profile/edit');
@@ -46,7 +49,7 @@ export default function SellerProfileDashboard() {
         })
         .catch(console.error);
     }
-  }, [seller, user, router]);
+  }, [seller, user, loading, profileLoading, router]);
 
   const handleLogout = () => {
     if (confirm('Are you sure you want to log out?')) {
@@ -55,7 +58,7 @@ export default function SellerProfileDashboard() {
     }
   };
 
-  if (!seller) {
+  if (loading || profileLoading || !seller) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-50">
         <Loader2 className="w-8 h-8 animate-spin text-primary-600" />

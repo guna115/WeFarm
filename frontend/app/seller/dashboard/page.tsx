@@ -85,7 +85,7 @@ export default function SellerDashboardPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requireProfile>
       <div className="min-h-screen bg-surface-50 pb-24 max-w-5xl mx-auto border-x border-surface-200 shadow-sm">
         {/* Header - Compact & Elegant */}
         <div className="bg-white px-4 pt-6 pb-4 border-b border-surface-200 sticky top-0 z-30">

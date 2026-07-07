@@ -19,14 +19,41 @@ export function useLocation(): UseLocationReturn {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const requestLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      return;
-    }
-
+  const requestLocation = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    try {
+      if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        let perm = await Geolocation.checkPermissions();
+        if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
+          perm = await Geolocation.requestPermissions();
+        }
+
+        if (perm.location === 'granted' || perm.coarseLocation === 'granted') {
+          const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+          setLocation({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          });
+          setLoading(false);
+          return;
+        } else {
+          setError('Location permission denied. Showing all nurseries.');
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (nativeErr) {
+      console.warn('Native geolocation failed, falling back to browser GPS', nativeErr);
+    }
+
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      setLoading(false);
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -53,9 +80,9 @@ export function useLocation(): UseLocationReturn {
         setLoading(false);
       },
       {
-        enableHighAccuracy: false, // Don't force GPS lock, allow cell/Wi-Fi positioning (much faster)
-        timeout: 15000, // Wait up to 15 seconds
-        maximumAge: 5 * 60 * 1000, // Cache location for 5 minutes
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 5 * 60 * 1000,
       }
     );
   }, []);

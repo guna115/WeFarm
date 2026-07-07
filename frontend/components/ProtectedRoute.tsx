@@ -19,19 +19,19 @@ export default function ProtectedRoute({
   requireProfile = false,
 }: ProtectedRouteProps) {
   const router = useRouter();
-  const { user, loading, profileComplete } = useAuth();
+  const { user, loading, profileLoading, profileComplete } = useAuth();
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !profileLoading) {
       if (!user) {
         router.replace('/seller/login');
       } else if (requireProfile && !profileComplete) {
         router.replace('/seller/profile');
       }
     }
-  }, [user, loading, profileComplete, requireProfile, router]);
+  }, [user, loading, profileLoading, profileComplete, requireProfile, router]);
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-surface-50">
         <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center shadow-xl shadow-primary-500/30 mb-6 animate-pulse">
@@ -39,7 +39,7 @@ export default function ProtectedRoute({
         </div>
         <div className="flex items-center gap-2 text-surface-500">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="text-sm font-medium">Loading...</span>
+          <span className="text-sm font-medium">Verifying account & profile...</span>
         </div>
       </div>
     );

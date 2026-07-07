@@ -8,6 +8,7 @@ import authRoutes from './routes/auth';
 import sellerRoutes from './routes/seller';
 import postRoutes from './routes/posts';
 import adminRoutes from './routes/admin';
+import devicesRoutes from './routes/devices';
 import { authMiddleware } from './middleware/auth';
 import { generalLimiter, authLimiter, uploadLimiter } from './middleware/rateLimiter';
 import { uploadImage } from './utils/cloudinary';
@@ -118,6 +119,9 @@ app.post(
 
 // Admin routes (admin auth protected)
 app.use('/api/admin', adminRoutes);
+
+// Devices routes (push notifications)
+app.use('/api/devices', devicesRoutes);
 
 // Start cron jobs
 startCleanupCron();

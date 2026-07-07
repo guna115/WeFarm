@@ -14,21 +14,21 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function SellerLoginPage() {
   const router = useRouter();
-  const { user, loading: authLoading, devLogin, seller } = useAuth();
+  const { user, loading: authLoading, profileLoading, devLogin, refreshSellerProfile, seller } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // If already logged in, redirect
+  // If already logged in, redirect after profile check finishes
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && !profileLoading && user) {
       if (seller?.profile_complete) {
         router.replace('/seller/dashboard');
       } else {
         router.replace('/seller/profile');
       }
     }
-  }, [user, authLoading, seller, router]);
+  }, [user, authLoading, profileLoading, seller, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +40,13 @@ export default function SellerLoginPage() {
     setLoading(true);
 
     try {
-      // Dev mode: just store phone and proceed
       devLogin(phoneNumber);
-
-      // Small delay to let context update
-      setTimeout(() => {
-        router.push('/seller/profile');
-      }, 300);
+      const existingProfile = await refreshSellerProfile(phoneNumber);
+      if (existingProfile && existingProfile.profile_complete) {
+        router.replace('/seller/dashboard');
+      } else {
+        router.replace('/seller/profile');
+      }
     } catch (err: any) {
       console.error('Login error:', err);
       setError('Login failed. Please try again.');
@@ -54,7 +54,7 @@ export default function SellerLoginPage() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-50">
         <Loader2 className="w-8 h-8 animate-spin text-primary-600" />

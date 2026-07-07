@@ -3,6 +3,7 @@ import pool from '../config/db';
 import { calculateDistance, getRoadDistances } from '../utils/distance';
 import { authMiddleware, AuthenticatedRequest } from '../middleware/auth';
 import { deleteImages } from '../utils/cloudinary';
+import { notifyNearbyDevices } from '../utils/notifications';
 
 const router = Router();
 
@@ -131,12 +132,15 @@ router.get('/category/:category', async (req: Request, res: Response) => {
     const { category } = req.params;
 
     const result = await pool.query(
-      `SELECT p.*, s.nursery_name, s.whatsapp_number as seller_whatsapp, s.district
+      `SELECT p.*, s.nursery_name, s.whatsapp_number as seller_whatsapp, s.district,
+              COALESCE(AVG(r.rating), 0) AS average_rating
        FROM posts p
        JOIN sellers s ON p.seller_id = s.id
+       LEFT JOIN ratings r ON s.id = r.seller_id
        WHERE p.expires_at > NOW()
          AND s.is_banned = false
          AND p.category = $1
+       GROUP BY p.id, s.id
        ORDER BY p.created_at DESC
        LIMIT 100`,
       [category]

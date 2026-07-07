@@ -31,6 +31,7 @@ interface AuthContextType {
   user: { phoneNumber: string } | null;
   token: string | null;
   loading: boolean;
+  profileLoading: boolean;
 
   // Seller state
   seller: SellerProfile | null;
@@ -39,7 +40,7 @@ interface AuthContextType {
   // Actions
   devLogin: (phone: string) => void;
   refreshToken: () => Promise<string | null>;
-  refreshSellerProfile: () => Promise<void>;
+  refreshSellerProfile: (phoneToFetch?: string) => Promise<SellerProfile | null>;
   logout: () => void;
 }
 
@@ -47,11 +48,12 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
   loading: true,
+  profileLoading: false,
   seller: null,
   profileComplete: false,
   devLogin: () => {},
   refreshToken: async () => null,
-  refreshSellerProfile: async () => {},
+  refreshSellerProfile: async () => null,
   logout: () => {},
 });
 
@@ -60,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [seller, setSeller] = useState<SellerProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const profileComplete = seller?.profile_complete ?? false;
 
@@ -72,21 +75,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('wefarm-dev-user', JSON.stringify(devUser));
   }, []);
 
-  // Fetch seller profile from backend (dev mode — no auth header)
-  const refreshSellerProfile = useCallback(async () => {
-    if (!user?.phoneNumber) return;
+  // Fetch seller profile from backend
+  const refreshSellerProfile = useCallback(async (phoneToFetch?: string): Promise<SellerProfile | null> => {
+    const targetPhone = phoneToFetch || user?.phoneNumber;
+    if (!targetPhone) {
+      setSeller(null);
+      setProfileLoading(false);
+      return null;
+    }
     try {
+      setProfileLoading(true);
       const res = await fetch(
-        `${API_URL}/seller/profile-by-phone?phone=${encodeURIComponent(user.phoneNumber)}`
+        `${API_URL}/seller/profile-by-phone?phone=${encodeURIComponent(targetPhone)}`
       );
       if (res.ok) {
         const data = await res.json();
-        setSeller(data.seller);
+        const loadedSeller = data.seller || null;
+        setSeller(loadedSeller);
+        setProfileLoading(false);
+        return loadedSeller;
       } else {
         setSeller(null);
+        setProfileLoading(false);
+        return null;
       }
     } catch {
       setSeller(null);
+      setProfileLoading(false);
+      return null;
     }
   }, [user]);
 
@@ -98,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
     setSeller(null);
+    setProfileLoading(false);
     localStorage.removeItem('wefarm-dev-user');
   }, []);
 
@@ -119,7 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Fetch seller profile when user changes
   useEffect(() => {
     if (user?.phoneNumber) {
-      refreshSellerProfile();
+      refreshSellerProfile(user.phoneNumber);
+    } else {
+      setSeller(null);
+      setProfileLoading(false);
     }
   }, [user, refreshSellerProfile]);
 
@@ -129,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         loading,
+        profileLoading,
         seller,
         profileComplete,
         devLogin,

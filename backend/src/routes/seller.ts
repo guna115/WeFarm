@@ -203,16 +203,22 @@ router.get('/id', async (req: AuthenticatedRequest, res: Response) => {
 });
 
 /**
- * GET /seller/:id/public — Get public seller profile & active posts (PUBLIC)
- * Used for Programmatic SEO pages
+ * GET /seller/:id/public
+ * Get public profile and posts of a seller by ID
  */
 router.get('/:id/public', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
-    // Fetch seller details (without private info)
+    
     const sellerResult = await pool.query(
-      'SELECT id, nursery_name, address, district, state, latitude, longitude, courier_available FROM sellers WHERE id = $1 AND is_banned = false',
+      `SELECT s.id, s.nursery_name, s.owner_name, s.address, s.district, s.state, 
+              s.latitude, s.longitude, s.courier_available, s.created_at,
+              COALESCE(AVG(r.rating), 0) AS average_rating,
+              COUNT(r.id) AS rating_count
+       FROM sellers s
+       LEFT JOIN ratings r ON s.id = r.seller_id
+       WHERE s.id = $1
+       GROUP BY s.id`,
       [id]
     );
 
@@ -221,27 +227,51 @@ router.get('/:id/public', async (req: Request, res: Response) => {
       return;
     }
 
-    const seller = sellerResult.rows[0];
-
-    // Fetch seller's active posts
     const postsResult = await pool.query(
-      `SELECT p.*, s.nursery_name, s.whatsapp_number as seller_whatsapp
-       FROM posts p
-       JOIN sellers s ON p.seller_id = s.id
-       WHERE p.seller_id = $1 AND p.expires_at > NOW()
-       ORDER BY p.created_at DESC`,
+      `SELECT id, plant_name, category, days_old, image_urls, image_public_ids, created_at, expires_at 
+       FROM posts 
+       WHERE seller_id = $1 AND expires_at > NOW() 
+       ORDER BY created_at DESC`,
       [id]
     );
 
-    const posts = postsResult.rows.map((post) => ({
-      ...post,
-      whatsapp_number: post.seller_whatsapp || post.whatsapp_number,
-    }));
-
-    res.json({ seller, posts });
+    res.json({
+      seller: sellerResult.rows[0],
+      posts: postsResult.rows
+    });
   } catch (error) {
     console.error('Error fetching public seller profile:', error);
     res.status(500).json({ message: 'Failed to fetch seller profile' });
+  }
+});
+
+/**
+ * POST /seller/:id/rate
+ * Submit an anonymous rating for a seller
+ */
+router.post('/:id/rate', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { device_id, rating } = req.body;
+
+    if (!device_id || !rating || rating < 1 || rating > 5) {
+      res.status(400).json({ message: 'Valid device_id and rating (1-5) required' });
+      return;
+    }
+
+    await pool.query(
+      `INSERT INTO ratings (seller_id, device_id, rating)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (seller_id, device_id) DO UPDATE SET
+       rating = EXCLUDED.rating,
+       created_at = NOW()`,
+      [id, device_id, rating]
+    );
+
+    res.json({ message: 'Rating submitted successfully' });
+  } catch (error) {
+    console.error('Error submitting rating:', error);
+    res.status(500).json({ message: 'Failed to submit rating' });
   }
 });
 
