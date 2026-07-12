@@ -42,6 +42,24 @@ interface PostCardProps {
   onReport?: (postId: string) => void;
 }
 
+const getCategoryEmoji = (category?: string) => {
+  const map: Record<string, string> = {
+    tomato: '🍅',
+    chilli: '🌶️',
+    brinjal: '🍆',
+    cauliflower: '🥦',
+    cabbage: '🥬',
+    onion: '🧅',
+    capsicum: '🫑',
+    gourd: '🥒',
+    leafy: '🥗',
+    flower: '🌸',
+    fruit: '🍈',
+    all: '🌿',
+  };
+  return map[category?.toLowerCase() || ''] || '🌿';
+};
+
 export default function PostCard({ post, onReport }: PostCardProps) {
   const { t } = useTranslation();
   const timeAgo = getTimeAgo(post.created_at);
@@ -142,14 +160,23 @@ export default function PostCard({ post, onReport }: PostCardProps) {
           </span>
         </div>
 
-        {/* Plant name & days */}
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-lg font-bold text-surface-900">
-            {post.plant_name}
-          </h4>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-earth-100 rounded-xl border border-earth-200 shadow-sm">
-            <Calendar className="w-4 h-4 text-earth-700" />
-            <span className="text-sm font-bold text-earth-800">
+        {/* Plant name, category icon & days */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h4 className="text-lg font-bold text-surface-900 truncate">
+              {post.plant_name}
+            </h4>
+            <span className="text-surface-400 font-bold px-0.5 flex-shrink-0">-</span>
+            <span 
+              className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-surface-100 border border-surface-200 text-base shadow-sm flex-shrink-0"
+              title={post.category || 'plant'}
+            >
+              {getCategoryEmoji(post.category)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-earth-100 rounded-xl border border-earth-200 shadow-sm flex-shrink-0">
+            <Calendar className="w-4 h-4 text-earth-700 flex-shrink-0" />
+            <span className="text-sm font-bold text-earth-800 whitespace-nowrap">
               {post.days_old} {t('buyer.daysOld')}
             </span>
           </div>
